@@ -1,46 +1,100 @@
-# Getting Started with Create React App
+## 03-5 daisyui CSS 컴포넌트 이해하기
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> CSS 컴포넌트란?
+> 
 
-## Available Scripts
+원하는 HTML 요소의 스타일링을 쉽게하는 CSS 클래스를 제공하는데, 이를 CSS 프레임워크는 이를 CSS 컴포넌트라고 부른다. 
 
-In the project directory, you can run:
+> 색상 테마
+> 
 
-### `npm start`
+웹 페이지에서 가장 많이 사용되는 색상을 주 색상 이라고한다. 두 번째로 많이 사용되는 색상을 보조 색상이라고 한다. 
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+daisyui 플러그인의 색상테모로 강조,정보,경고나,오류 색상 등을 제공한다. 이런 색상들을 한꺼번에 부를 때 색상 테마라고 한다.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+> Button 컴포넌트 구현하기
+> 
 
-### `npm test`
+Button 이란 리액트 컴포넌트가 있다면 좀 더 쉽게 사용 가능하며 아무런 설정도 하지 않으면 기본값이 적용되도록 한다면 좀 더 간결하게 사용가능하다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> btn 부분 생략하기
+> 
 
-### `npm run build`
+```tsx
+import type {FC, DetailedHTMLProps, ButtonHTMLAttributes, PropsWithChildren } from 'react';
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+export type ReactButtonProps = DetailedHTMLProps<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  HTMLButtonElement
+  >
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+export type ButtonProps = ReactButtonProps & {}
+  
+export const Button: FC<PropsWithChildren<ButtonProps>> = ({
+  className: _className,
+  ...buttonProps
+}) => {
+  const className = ['btn', _className].join(' ')
+  return <button {...buttonProps} className={className} />
+}
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+> 버튼의 크기 설정
+> 
 
-### `npm run eject`
+BTN-LG , BTN-MD ,BTN-SM ,BTN -XS 4가지 클래스를 제공 
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+> Icon 컴포넌트 구현하기
+> 
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+앞서 제작한 Button 과 src/components 디렉터리에 구현해 둔 Icon 컴포넌트를 앞선 코드 형태로 동작하도록 구현한 것이다. Button의 크기에 따라 아이콘의 텍스트 크기를 강제로 설정하는 부분을 구현했다.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```tsx
+import type { FC } from "react";
+import type { ButtonProps } from "./Button";
+import type { IconProps as CIonProps } from "../../components";
+import { Button } from "./Button";
+import { Icon as CIcon } from "../../components";
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+export type IconProps = ButtonProps &
+  CIonProps & {
+    iconClassName?: string;
+  };
 
-## Learn More
+export const Icon: FC<IconProps> = ({
+  name,
+  iconClassName,
+  className,
+  ...buttonProps
+}) => {
+  const btnClassName = ["btn-circle", className].join(" ");
+  return (
+    <Button {...buttonProps} className={btnClassName}>
+      <CIcon className={iconClassName} name={name} />
+    </Button>
+  );
+};
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+> Input 컴포넌트 구현하기
+> 
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+input은 button과 함께 가장 널리 사용되는 HTML 요소이다.
+
+daisyui의 input CSS 컴포넌트는 사용자 입력을 받는 input 태그일때 경계를 2줄로 표시해 입력 포커스를 보여줌
+
+색상 크기 테두리 설정은 방법 다 똑같음 .
+
+> 모달 컴포넌트 구현하기
+> 
+
+사용자의 선택을 입력받는 대화상자는 크게 모덜리스와 모달 2가지 종류가 있다. 
+
+모덜리스 대화 상자는 영역 바깥쪽을 클릭할 수 있지만, 모달 ㅐ화 상자는 영역 바깥 쪽의 UI가 동작하지 않는다. 
+
+daisyui는 모달대화상자 CSS 컴포넌트를 제공한다. 크게 modal,modal-box,modal-action 등 3가지 클래스로 구성
+
+1. 최상위 컴포넌트에 modal 클래스를 부여 
+2. 모달 대화 상자를 오픈하려면 modal-open 클래스를 부여
+3. daisyui의 모달 컴포넌트는 최상위 컴포넌트의 첫 번째 자식 컴포넌트로 modal-box를 부여해야 한다. 
+4. onCloseIconClicked 속성은 닫기 아이콘
